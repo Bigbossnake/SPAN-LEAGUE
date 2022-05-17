@@ -1,0 +1,55 @@
+Configuration:
+  name: span-league-log-conf
+
+  # Log4J Properties
+  Properties:
+    Property:
+      - name: logs-path
+        value: "./logs"
+      - name: logs-file
+        value: "span-league-ui.log"
+      - name: logs-prefix
+        value: "span-league-ui"
+      - name: application-name
+        value: "[span-league-ui-log]"
+
+  # Log4J Appenders Configuration
+  appenders:
+
+    # Console Logging Configuration
+    Console:
+      name: Console-Appender
+      target: SYSTEM_OUT
+      PatternLayout:
+        Pattern: "%style{%d{ISO8601}}{White} %style{${application-name}}{bright,magenta} %highlight{%-5level }[%style{%t}{bright,blue}] %style{%C.%M:%L{1.}}{bright,yellow} - %msg%n%throwable"
+
+    # File Logging Configuration
+    RollingFile:
+      - name: File-Appender
+        fileName: "${logs-path}/${logs-file}"
+        filePattern: "${logs-path}/${date:yyyy-MM}/${logs-prefix}%d{-dd-MMMM-yyyy}-%i.log.gz"
+        PatternLayout:
+          pattern: "%d ${application-name} %p [%t] %C:%L{1.} %msg%n"
+        Policies:
+          OnStartupTriggeringPolicy:
+            minSize: 0
+          SizeBasedTriggeringPolicy:
+            size: 10MB
+        DefaultRollOverStrategy:
+          max: 20
+
+  Loggers:
+    logger:
+      # Application Specific Logger For Java Code
+      - name: com.span.league
+        level: info
+        additivity: false
+        AppenderRef:
+          - ref: Console-Appender
+          - ref: File-Appender
+
+    Root:
+      level: info
+      AppenderRef:
+        - ref: Console-Appender
+        - ref: File-Appender
